@@ -9,11 +9,32 @@ const files = ["a", "b", "c", "d", "e", "f", "g", "h"];
 const ranks = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
 let clicked_square = undefined;
-
 let lastMove = undefined;
+let turn = "w";
+let playAs = "w";
 
 function isValidMove(pieceI, pieceJ, tryI, tryJ) {
     return getPossibleMoves(pieceI, pieceJ).some(pos => pos[0] == tryI && pos[1] == tryJ);
+}
+
+function move(originI, originJ, destI, destJ) {
+    if (gameState[originI][originJ].endsWith("P")
+        && destJ != originJ
+        && gameState[destI][destJ] === "") {
+        const fwd = gameState[originI][originJ][0] === "w" ? 1 : -1;
+        gameState[destI - fwd][destJ] = "";
+    }
+
+    gameState[destI][destJ] = gameState[originI][originJ];
+    gameState[originI][originJ] = "";
+
+    lastMove = {
+        piece: gameState[destI][destJ],
+        from: [originI, originJ],
+        to: [destI, destJ]
+    };
+
+    turn = turn === "w" ? "b" : "w";
 }
 
 function getPossibleMoves(i, j) {
@@ -49,7 +70,6 @@ function getPossibleMoves(i, j) {
         return false; // A piece blocks further movement
     };
 
-    // Sliding pieces: bishop, rook, queen
     const slide = (directions) => {
         for (const [di, dj] of directions) {
             let x = i + di;
@@ -64,7 +84,6 @@ function getPossibleMoves(i, j) {
     };
 
     if (type === "N") {
-        // Knight
         const offsets = [
             [2, 1], [2, -1], [-2, 1], [-2, -1],
             [1, 2], [1, -2], [-1, 2], [-1, -2]
@@ -82,7 +101,6 @@ function getPossibleMoves(i, j) {
     }
 
     else if (type === "K") {
-        // King
         for (let di = -1; di <= 1; di++) {
             for (let dj = -1; dj <= 1; dj++) {
                 if (di === 0 && dj === 0) continue;
@@ -114,12 +132,9 @@ function getPossibleMoves(i, j) {
     }
 
     else if (type === "P") {
-        // White pawns move toward increasing i.
-        // Black pawns move toward decreasing i.
         const dir = color === "w" ? 1 : -1;
         const startRank = color === "w" ? 1 : 6;
 
-        // One square forward
         const nextI = i + dir;
 
         if (inside(nextI, j) && isEmpty(nextI, j)) {
@@ -146,13 +161,10 @@ function getPossibleMoves(i, j) {
         if (
             lastMove &&
             lastMove.piece === (color === "w" ? "bP" : "wP") &&
-            lastMove.from[0] === i + 2 * (-dir) &&
-            lastMove.to[0] === i &&
-            lastMove.to[1] === y &&
-            lastMove.from[1] === y &&
-            isEmpty(x, y)
+            lastMove.from[0] === i + dir * 2 &&
+            lastMove.to[0] === i
         ) {
-            moves.push([x, y]);
+            moves.push([lastMove.from[0] - dir, lastMove.to[1]]);
         }
     }
 
@@ -276,9 +288,9 @@ canvas.addEventListener('click', (e) => {
     if (clicked_square
         && gameState[clicked_square[0]][clicked_square[1]] != ""
         && isValidMove(clicked_square[0], clicked_square[1], row, col)) {
-        gameState[row][col] = gameState[clicked_square[0]][clicked_square[1]];
-        gameState[clicked_square[0]][clicked_square[1]] = "";
+        move(clicked_square[0], clicked_square[1], row, col);
         clicked_square = undefined;
+        return;
     }
 
     if (!clicked_square || !clicked_square.every((val, index) => val === coord[index])) {
