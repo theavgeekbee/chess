@@ -198,7 +198,10 @@ function drawBoard() {
         }
     }
 
-    if (clicked_square && gameState[clicked_square[0]][clicked_square[1]] != "") {
+    if (clicked_square
+        && turn === playAs
+        && gameState[clicked_square[0]][clicked_square[1]] != ""
+        && gameState[clicked_square[0]][clicked_square[1]][0] === playAs) {
         const moves = getPossibleMoves(clicked_square[0], clicked_square[1]);
         for (const move of moves) {
             ctx.fillStyle = "#00000044";
@@ -243,6 +246,15 @@ function drawBoard() {
     requestAnimationFrame(drawBoard);
 }
 
+function resetBoard() {
+    gameState[0] = ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"];
+    gameState[1] = Array(8).fill("wP");
+
+    gameState[6] = Array(8).fill("bP");
+    gameState[7] = ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"];
+
+}
+
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -265,11 +277,7 @@ async function initGame() {
     const resolvedPairs = await Promise.all(promises);
     pieceImages = Object.fromEntries(resolvedPairs);
 
-    gameState[0] = ["wR", "wN", "wB", "wQ", "wK", "wB", "wN", "wR"];
-    gameState[1] = Array(8).fill("wP");
-
-    gameState[6] = Array(8).fill("bP");
-    gameState[7] = ["bR", "bN", "bB", "bQ", "bK", "bB", "bN", "bR"];
+    resetBoard();
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBoard();
@@ -286,6 +294,7 @@ canvas.addEventListener('click', (e) => {
     const col = Math.floor(x / 50);
     const coord = [row, col];
     if (clicked_square
+        && turn === playAs
         && gameState[clicked_square[0]][clicked_square[1]] != ""
         && isValidMove(clicked_square[0], clicked_square[1], row, col)) {
         move(clicked_square[0], clicked_square[1], row, col);
