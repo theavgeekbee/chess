@@ -1,0 +1,84 @@
+:root {
+    --bg: #f4f4f0;
+    --text: #262522;
+    --muted: #6b6a66;
+    --board-dark: #769656;
+    --button-bg: #ffffff;
+    --button-border: #c9c8c2;
+    --button-hover: #eaeae4;
+    --danger: #a8372c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #262522;
+        --text: #ecebe6;
+        --muted: #9d9b94;
+        --button-bg: #33322f;
+        --button-border: #4a4945;
+        --button-hover: #3e3d3a;
+        --danger: #e07a6f;
+    }
+}
+
+body {
+    margin: 0;
+    padding: 2rem 1rem;
+    background: var(--bg);
+    color: var(--text);
+    font-family: monospace;
+    text-align: center;
+}
+
+h1 {
+    margin: 0 0 1.25rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+}
+
+button {
+    margin: 0.25rem 0.15rem;
+    padding: 0.5rem 1rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--button-bg);
+    border: 1px solid var(--button-border);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    background: var(--button-hover);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--board-dark);
+    outline-offset: 2px;
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+#resign:hover:not(:disabled) {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+#room,
+#status {
+    margin: 0.75rem 0 0;
+    color: var(--muted);
+}
+
+#status {
+    min-height: 1.5em;
+    color: var(--text);
+}
