@@ -14,7 +14,11 @@
     </canvas>
 
     <br />
-    <button>create room</button>
-    <button>join room</button>
+    <button onclick="createRoom();">create room</button>
+    <button onclick="showJoinPrompt();">join room</button>
+    <button id="resign" onclick="resign();" disabled>resign</button>
+    <button id="draw" onclick="draw();" disabled>draw</button>
+    <br />
+    <p id="room">when you join, your room id will appear here</p>
 </body>
 </html>
